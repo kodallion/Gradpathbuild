@@ -5,37 +5,37 @@ export function AIAssistant() {
   const [activeMode, setActiveMode] = useState<"statement" | "chat">("statement");
 
   return (
-    <div className="p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
+    <div className="p-4 md:p-8">
+      <div className="max-w-6xl mx-auto space-y-4 md:space-y-6">
         {/* Header */}
         <div>
-          <h1 className="text-4xl mb-2">AI Assistant</h1>
-          <p className="text-muted-foreground">Get AI-powered help with your graduate applications</p>
+          <h1 className="text-2xl md:text-4xl mb-2">AI Assistant</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Get AI-powered help with your graduate applications</p>
         </div>
 
         {/* Mode Selector */}
-        <div className="bg-card rounded-2xl p-4 border border-border shadow-sm">
-          <div className="flex gap-4">
+        <div className="bg-card rounded-xl md:rounded-2xl p-3 md:p-4 border border-border shadow-sm">
+          <div className="flex flex-col sm:flex-row gap-2 md:gap-4">
             <button
               onClick={() => setActiveMode("statement")}
-              className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base rounded-lg md:rounded-xl font-medium transition-all ${
                 activeMode === "statement"
                   ? "bg-primary text-primary-foreground shadow-md"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
-              <FileText className="w-5 h-5" />
+              <FileText className="w-4 h-4 md:w-5 md:h-5" />
               Personal Statement Analyzer
             </button>
             <button
               onClick={() => setActiveMode("chat")}
-              className={`flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-xl font-medium transition-all ${
+              className={`flex-1 flex items-center justify-center gap-2 md:gap-3 px-4 md:px-6 py-3 md:py-4 text-sm md:text-base rounded-lg md:rounded-xl font-medium transition-all ${
                 activeMode === "chat"
                   ? "bg-primary text-primary-foreground shadow-md"
                   : "bg-muted text-muted-foreground hover:bg-muted/80"
               }`}
             >
-              <MessageSquare className="w-5 h-5" />
+              <MessageSquare className="w-4 h-4 md:w-5 md:h-5" />
               Application Guidance
             </button>
           </div>
@@ -86,16 +86,16 @@ function StatementAnalyzer() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Info Banner */}
-      <div className="bg-accent/30 rounded-2xl p-6 border border-accent">
-        <div className="flex gap-3">
-          <Sparkles className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+      <div className="bg-accent/30 rounded-xl md:rounded-2xl p-4 md:p-6 border border-accent">
+        <div className="flex gap-2 md:gap-3">
+          <Sparkles className="w-4 h-4 md:w-5 md:h-5 text-primary flex-shrink-0 mt-0.5" />
           <div>
-            <h3 className="font-semibold mb-2">How it works</h3>
-            <p className="text-sm text-muted-foreground">
-              Paste your personal statement below and our AI will analyze it for grammar, clarity, tone, 
-              structure, and alignment with graduate application standards. You'll receive actionable 
+            <h3 className="font-semibold text-sm md:text-base mb-2">How it works</h3>
+            <p className="text-xs md:text-sm text-muted-foreground">
+              Paste your personal statement below and our AI will analyze it for grammar, clarity, tone,
+              structure, and alignment with graduate application standards. You'll receive actionable
               feedback to improve your statement.
             </p>
           </div>
@@ -103,26 +103,26 @@ function StatementAnalyzer() {
       </div>
 
       {/* Input Section */}
-      <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
-        <label className="block text-lg font-semibold mb-4">Your Personal Statement</label>
+      <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border shadow-sm">
+        <label className="block text-base md:text-lg font-semibold mb-3 md:mb-4">Your Personal Statement</label>
         <textarea
           value={statement}
           onChange={(e) => setStatement(e.target.value)}
           placeholder="Paste your personal statement here..."
           rows={12}
-          className="w-full px-4 py-3 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring resize-none"
+          className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring resize-none"
         />
-        
-        <div className="flex items-center justify-between mt-4">
-          <div className="text-sm text-muted-foreground">
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-3 md:mt-4">
+          <div className="text-xs md:text-sm text-muted-foreground">
             {statement.split(/\s+/).filter(w => w.length > 0).length} words
           </div>
           <button
             onClick={handleAnalyze}
             disabled={!statement.trim() || isAnalyzing}
-            className="px-6 py-3 bg-primary text-primary-foreground rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="w-full sm:w-auto px-4 md:px-6 py-2.5 md:py-3 text-sm md:text-base bg-primary text-primary-foreground rounded-lg md:rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            <Sparkles className="w-5 h-5" />
+            <Sparkles className="w-4 h-4 md:w-5 md:h-5" />
             {isAnalyzing ? "Analyzing..." : "Analyze with AI"}
           </button>
         </div>
@@ -130,26 +130,26 @@ function StatementAnalyzer() {
 
       {/* Analysis Results */}
       {analysis && (
-        <div className="bg-card rounded-2xl p-6 border border-border shadow-sm space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-border">
-            <h2 className="text-2xl">Analysis Results</h2>
-            <div className="text-right">
-              <div className="text-sm text-muted-foreground mb-1">Overall Score</div>
-              <div className="text-3xl font-bold text-primary">{analysis.overallScore}/100</div>
+        <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border shadow-sm space-y-4 md:space-y-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 md:pb-4 border-b border-border">
+            <h2 className="text-xl md:text-2xl">Analysis Results</h2>
+            <div className="text-left sm:text-right">
+              <div className="text-xs md:text-sm text-muted-foreground mb-1">Overall Score</div>
+              <div className="text-2xl md:text-3xl font-bold text-primary">{analysis.overallScore}/100</div>
             </div>
           </div>
 
           {/* Strengths */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <h3 className="text-xl font-semibold">Strengths</h3>
+            <div className="flex items-center gap-2 mb-3 md:mb-4">
+              <CheckCircle className="w-4 h-4 md:w-5 md:h-5 text-green-600" />
+              <h3 className="text-lg md:text-xl font-semibold">Strengths</h3>
             </div>
             <ul className="space-y-2">
               {analysis.strengths.map((strength: string, index: number) => (
-                <li key={index} className="flex items-start gap-2 p-3 bg-green-50 rounded-lg">
-                  <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-sm">{strength}</span>
+                <li key={index} className="flex items-start gap-2 p-2.5 md:p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                  <div className="w-1.5 h-1.5 bg-green-600 rounded-full mt-1.5 md:mt-2 flex-shrink-0" />
+                  <span className="text-xs md:text-sm">{strength}</span>
                 </li>
               ))}
             </ul>
@@ -157,15 +157,15 @@ function StatementAnalyzer() {
 
           {/* Suggested Improvements */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <AlertCircle className="w-5 h-5 text-orange-600" />
-              <h3 className="text-xl font-semibold">Suggested Improvements</h3>
+            <div className="flex items-center gap-2 mb-3 md:mb-4">
+              <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-orange-600" />
+              <h3 className="text-lg md:text-xl font-semibold">Suggested Improvements</h3>
             </div>
             <ul className="space-y-2">
               {analysis.improvements.map((improvement: string, index: number) => (
-                <li key={index} className="flex items-start gap-2 p-3 bg-orange-50 rounded-lg">
-                  <div className="w-1.5 h-1.5 bg-orange-600 rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-sm">{improvement}</span>
+                <li key={index} className="flex items-start gap-2 p-2.5 md:p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                  <div className="w-1.5 h-1.5 bg-orange-600 rounded-full mt-1.5 md:mt-2 flex-shrink-0" />
+                  <span className="text-xs md:text-sm">{improvement}</span>
                 </li>
               ))}
             </ul>
@@ -173,15 +173,15 @@ function StatementAnalyzer() {
 
           {/* Clarity Enhancements */}
           <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Lightbulb className="w-5 h-5 text-blue-600" />
-              <h3 className="text-xl font-semibold">Clarity Enhancements</h3>
+            <div className="flex items-center gap-2 mb-3 md:mb-4">
+              <Lightbulb className="w-4 h-4 md:w-5 md:h-5 text-blue-600" />
+              <h3 className="text-lg md:text-xl font-semibold">Clarity Enhancements</h3>
             </div>
             <ul className="space-y-2">
               {analysis.clarity.map((item: string, index: number) => (
-                <li key={index} className="flex items-start gap-2 p-3 bg-blue-50 rounded-lg">
-                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0" />
-                  <span className="text-sm">{item}</span>
+                <li key={index} className="flex items-start gap-2 p-2.5 md:p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
+                  <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-1.5 md:mt-2 flex-shrink-0" />
+                  <span className="text-xs md:text-sm">{item}</span>
                 </li>
               ))}
             </ul>
@@ -245,16 +245,16 @@ function GuidanceChat() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Example Questions */}
-      <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
-        <h3 className="font-semibold mb-4">Example Questions</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border shadow-sm">
+        <h3 className="font-semibold text-sm md:text-base mb-3 md:mb-4">Example Questions</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
           {exampleQuestions.map((question, index) => (
             <button
               key={index}
               onClick={() => setInput(question)}
-              className="text-left p-3 bg-accent/30 rounded-lg hover:bg-accent/50 transition-colors text-sm"
+              className="text-left p-2.5 md:p-3 bg-accent/30 rounded-lg hover:bg-accent/50 transition-colors text-xs md:text-sm"
             >
               {question}
             </button>
@@ -263,15 +263,15 @@ function GuidanceChat() {
       </div>
 
       {/* Chat Messages */}
-      <div className="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-        <div className="h-[500px] overflow-y-auto p-6 space-y-4">
+      <div className="bg-card rounded-xl md:rounded-2xl border border-border shadow-sm overflow-hidden">
+        <div className="h-[400px] md:h-[500px] overflow-y-auto p-3 md:p-6 space-y-3 md:space-y-4">
           {messages.map((message, index) => (
             <div
               key={index}
               className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                className={`max-w-[85%] md:max-w-[80%] rounded-xl md:rounded-2xl px-3 md:px-4 py-2.5 md:py-3 ${
                   message.role === "user"
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted"
@@ -279,33 +279,33 @@ function GuidanceChat() {
               >
                 {message.role === "assistant" && (
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-primary" />
+                    <Sparkles className="w-3.5 h-3.5 md:w-4 md:h-4 text-primary" />
                     <span className="text-xs font-medium text-muted-foreground">AI Assistant</span>
                   </div>
                 )}
-                <p className="text-sm whitespace-pre-line">{message.content}</p>
+                <p className="text-xs md:text-sm whitespace-pre-line">{message.content}</p>
               </div>
             </div>
           ))}
         </div>
 
         {/* Input */}
-        <div className="border-t border-border p-4">
-          <div className="flex gap-3">
+        <div className="border-t border-border p-3 md:p-4">
+          <div className="flex gap-2 md:gap-3">
             <input
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === "Enter" && handleSend()}
-              placeholder="Ask a question about graduate applications..."
-              className="flex-1 px-4 py-3 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+              placeholder="Ask a question..."
+              className="flex-1 px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
             />
             <button
               onClick={handleSend}
               disabled={!input.trim()}
-              className="px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-4 md:px-6 py-2.5 md:py-3 bg-primary text-primary-foreground rounded-lg md:rounded-xl hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
             >
-              <Send className="w-5 h-5" />
+              <Send className="w-4 h-4 md:w-5 md:h-5" />
             </button>
           </div>
         </div>

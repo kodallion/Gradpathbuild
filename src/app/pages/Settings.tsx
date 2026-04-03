@@ -24,18 +24,18 @@ export function Settings() {
   ];
 
   return (
-    <div className="p-8 max-w-[1200px] mx-auto">
+    <div className="p-4 md:p-8 max-w-[1200px] mx-auto">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Settings</h1>
-        <p className="text-muted-foreground">
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">Settings</h1>
+        <p className="text-sm md:text-base text-muted-foreground">
           Manage your account preferences and application settings
         </p>
       </div>
 
-      <div className="flex gap-6">
-        {/* Sidebar Tabs */}
-        <div className="w-64 flex-shrink-0">
+      <div className="flex flex-col md:flex-row gap-4 md:gap-6">
+        {/* Sidebar Tabs - Hidden on mobile, shown as buttons above content */}
+        <div className="hidden md:block md:w-64 flex-shrink-0">
           <div className="bg-card rounded-2xl border border-border p-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
@@ -66,14 +66,46 @@ export function Settings() {
           </button>
         </div>
 
+        {/* Mobile Tabs */}
+        <div className="md:hidden bg-card rounded-xl border border-border p-2 overflow-x-auto">
+          <div className="flex gap-2 min-w-max">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all whitespace-nowrap text-sm ${
+                    activeTab === tab.id
+                      ? "bg-primary text-primary-foreground"
+                      : "text-foreground hover:bg-accent"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="font-medium">{tab.label}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* Content Area */}
         <div className="flex-1">
-          <div className="bg-card rounded-2xl border border-border p-8">
+          <div className="bg-card rounded-xl md:rounded-2xl border border-border p-5 md:p-8">
             {activeTab === "profile" && <ProfileSettings />}
             {activeTab === "notifications" && <NotificationSettings />}
             {activeTab === "security" && <SecuritySettings />}
             {activeTab === "appearance" && <AppearanceSettings />}
           </div>
+
+          {/* Mobile Sign Out Button */}
+          <button
+            onClick={handleSignOut}
+            className="md:hidden w-full mt-4 flex items-center justify-center gap-3 px-4 py-3 rounded-xl text-destructive hover:bg-destructive/10 transition-all border border-destructive/20"
+          >
+            <LogOut className="w-5 h-5" />
+            <span className="font-medium">Sign Out</span>
+          </button>
         </div>
       </div>
     </div>
@@ -85,57 +117,57 @@ function ProfileSettings() {
   const userName = localStorage.getItem("userName") || "Student Name";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h2 className="text-xl font-semibold mb-4">Profile Information</h2>
-        <p className="text-sm text-muted-foreground mb-6">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Profile Information</h2>
+        <p className="text-xs md:text-sm text-muted-foreground mb-4 md:mb-6">
           Update your personal information and profile details
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3 md:space-y-4">
         <div>
-          <label className="block text-sm font-medium mb-2">Full Name</label>
+          <label className="block text-xs md:text-sm font-medium mb-2">Full Name</label>
           <input
             type="text"
             defaultValue={userName}
-            className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Email Address</label>
+          <label className="block text-xs md:text-sm font-medium mb-2">Email Address</label>
           <input
             type="email"
             defaultValue={userEmail}
-            className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Phone Number</label>
+          <label className="block text-xs md:text-sm font-medium mb-2">Phone Number</label>
           <input
             type="tel"
             placeholder="+1 (555) 123-4567"
-            className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Bio</label>
+          <label className="block text-xs md:text-sm font-medium mb-2">Bio</label>
           <textarea
             rows={4}
             placeholder="Tell us about yourself..."
-            className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+            className="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
           />
         </div>
       </div>
 
-      <div className="flex gap-3 pt-4">
-        <button className="px-6 py-2 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+      <div className="flex flex-col sm:flex-row gap-2 md:gap-3 pt-3 md:pt-4">
+        <button className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
           Save Changes
         </button>
-        <button className="px-6 py-2 rounded-xl border border-border font-medium hover:bg-accent transition-colors">
+        <button className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border font-medium hover:bg-accent transition-colors">
           Cancel
         </button>
       </div>
@@ -150,102 +182,102 @@ function NotificationSettings() {
   const [taskReminders, setTaskReminders] = useState(true);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h2 className="text-xl font-semibold mb-4">Notification Preferences</h2>
-        <p className="text-sm text-muted-foreground mb-6">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Notification Preferences</h2>
+        <p className="text-xs md:text-sm text-muted-foreground mb-4 md:mb-6">
           Choose how you want to receive notifications
         </p>
       </div>
 
-      <div className="space-y-4">
-        <div className="flex items-center justify-between py-3 border-b border-border">
-          <div>
-            <div className="font-medium">Email Notifications</div>
-            <div className="text-sm text-muted-foreground">
+      <div className="space-y-3 md:space-y-4">
+        <div className="flex items-center justify-between py-2 md:py-3 border-b border-border">
+          <div className="flex-1 pr-3">
+            <div className="font-medium text-sm md:text-base">Email Notifications</div>
+            <div className="text-xs md:text-sm text-muted-foreground">
               Receive notifications via email
             </div>
           </div>
           <button
             onClick={() => setEmailNotifications(!emailNotifications)}
-            className={`w-12 h-6 rounded-full transition-colors ${
+            className={`w-11 h-6 md:w-12 md:h-6 rounded-full transition-colors flex-shrink-0 ${
               emailNotifications ? "bg-primary" : "bg-muted"
             }`}
           >
             <div
-              className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                emailNotifications ? "translate-x-6" : "translate-x-0.5"
+              className={`w-4.5 h-4.5 md:w-5 md:h-5 bg-white rounded-full transition-transform ${
+                emailNotifications ? "translate-x-5.5 md:translate-x-6" : "translate-x-0.5"
               }`}
             />
           </button>
         </div>
 
-        <div className="flex items-center justify-between py-3 border-b border-border">
-          <div>
-            <div className="font-medium">Push Notifications</div>
-            <div className="text-sm text-muted-foreground">
+        <div className="flex items-center justify-between py-2 md:py-3 border-b border-border">
+          <div className="flex-1 pr-3">
+            <div className="font-medium text-sm md:text-base">Push Notifications</div>
+            <div className="text-xs md:text-sm text-muted-foreground">
               Receive browser push notifications
             </div>
           </div>
           <button
             onClick={() => setPushNotifications(!pushNotifications)}
-            className={`w-12 h-6 rounded-full transition-colors ${
+            className={`w-11 h-6 md:w-12 md:h-6 rounded-full transition-colors flex-shrink-0 ${
               pushNotifications ? "bg-primary" : "bg-muted"
             }`}
           >
             <div
-              className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                pushNotifications ? "translate-x-6" : "translate-x-0.5"
+              className={`w-4.5 h-4.5 md:w-5 md:h-5 bg-white rounded-full transition-transform ${
+                pushNotifications ? "translate-x-5.5 md:translate-x-6" : "translate-x-0.5"
               }`}
             />
           </button>
         </div>
 
-        <div className="flex items-center justify-between py-3 border-b border-border">
-          <div>
-            <div className="font-medium">Deadline Reminders</div>
-            <div className="text-sm text-muted-foreground">
+        <div className="flex items-center justify-between py-2 md:py-3 border-b border-border">
+          <div className="flex-1 pr-3">
+            <div className="font-medium text-sm md:text-base">Deadline Reminders</div>
+            <div className="text-xs md:text-sm text-muted-foreground">
               Get reminders for upcoming application deadlines
             </div>
           </div>
           <button
             onClick={() => setDeadlineReminders(!deadlineReminders)}
-            className={`w-12 h-6 rounded-full transition-colors ${
+            className={`w-11 h-6 md:w-12 md:h-6 rounded-full transition-colors flex-shrink-0 ${
               deadlineReminders ? "bg-primary" : "bg-muted"
             }`}
           >
             <div
-              className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                deadlineReminders ? "translate-x-6" : "translate-x-0.5"
+              className={`w-4.5 h-4.5 md:w-5 md:h-5 bg-white rounded-full transition-transform ${
+                deadlineReminders ? "translate-x-5.5 md:translate-x-6" : "translate-x-0.5"
               }`}
             />
           </button>
         </div>
 
-        <div className="flex items-center justify-between py-3">
-          <div>
-            <div className="font-medium">Task Reminders</div>
-            <div className="text-sm text-muted-foreground">
+        <div className="flex items-center justify-between py-2 md:py-3">
+          <div className="flex-1 pr-3">
+            <div className="font-medium text-sm md:text-base">Task Reminders</div>
+            <div className="text-xs md:text-sm text-muted-foreground">
               Get reminders for incomplete tasks
             </div>
           </div>
           <button
             onClick={() => setTaskReminders(!taskReminders)}
-            className={`w-12 h-6 rounded-full transition-colors ${
+            className={`w-11 h-6 md:w-12 md:h-6 rounded-full transition-colors flex-shrink-0 ${
               taskReminders ? "bg-primary" : "bg-muted"
             }`}
           >
             <div
-              className={`w-5 h-5 bg-white rounded-full transition-transform ${
-                taskReminders ? "translate-x-6" : "translate-x-0.5"
+              className={`w-4.5 h-4.5 md:w-5 md:h-5 bg-white rounded-full transition-transform ${
+                taskReminders ? "translate-x-5.5 md:translate-x-6" : "translate-x-0.5"
               }`}
             />
           </button>
         </div>
       </div>
 
-      <div className="flex gap-3 pt-4">
-        <button className="px-6 py-2 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+      <div className="flex gap-2 md:gap-3 pt-3 md:pt-4">
+        <button className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
           Save Preferences
         </button>
       </div>
@@ -318,28 +350,28 @@ function AppearanceSettings() {
   const { theme, setTheme } = useTheme();
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       <div>
-        <h2 className="text-xl font-semibold mb-4">Appearance Settings</h2>
-        <p className="text-sm text-muted-foreground mb-6">
+        <h2 className="text-lg md:text-xl font-semibold mb-3 md:mb-4">Appearance Settings</h2>
+        <p className="text-xs md:text-sm text-muted-foreground mb-4 md:mb-6">
           Customize how GradPath looks and feels
         </p>
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-4">Theme</label>
-        <div className="grid grid-cols-3 gap-4">
+        <label className="block text-xs md:text-sm font-medium mb-3 md:mb-4">Theme</label>
+        <div className="grid grid-cols-3 gap-3 md:gap-4">
           {(["light", "dark", "auto"] as const).map((themeOption) => (
             <button
               key={themeOption}
               onClick={() => setTheme(themeOption)}
-              className={`p-4 rounded-xl border-2 transition-all ${
+              className={`p-3 md:p-4 rounded-lg md:rounded-xl border-2 transition-all ${
                 theme === themeOption
                   ? "border-primary bg-primary/5"
                   : "border-border hover:border-primary/50"
               }`}
             >
-              <div className="font-medium capitalize">{themeOption}</div>
+              <div className="font-medium capitalize text-sm md:text-base">{themeOption}</div>
               <div className="text-xs text-muted-foreground mt-1">
                 {themeOption === "light" && "Light mode"}
                 {themeOption === "dark" && "Dark mode"}
@@ -351,21 +383,21 @@ function AppearanceSettings() {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-4">Display Density</label>
+        <label className="block text-xs md:text-sm font-medium mb-3 md:mb-4">Display Density</label>
         <div className="space-y-2">
           {["comfortable", "compact"].map((density) => (
             <label
               key={density}
-              className="flex items-center gap-3 p-3 rounded-xl border border-border hover:bg-accent cursor-pointer"
+              className="flex items-center gap-3 p-2.5 md:p-3 rounded-lg md:rounded-xl border border-border hover:bg-accent cursor-pointer"
             >
               <input
                 type="radio"
                 name="density"
                 value={density}
-                className="w-4 h-4"
+                className="w-3.5 h-3.5 md:w-4 md:h-4"
               />
               <div>
-                <div className="font-medium capitalize">{density}</div>
+                <div className="font-medium capitalize text-sm md:text-base">{density}</div>
                 <div className="text-xs text-muted-foreground">
                   {density === "comfortable" && "More spacing between elements"}
                   {density === "compact" && "Less spacing, more content visible"}

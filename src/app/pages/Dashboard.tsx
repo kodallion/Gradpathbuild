@@ -64,62 +64,62 @@ export function Dashboard() {
   ];
 
   return (
-    <div className="p-8">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         {/* Header */}
         <div>
-          <h1 className="text-4xl mb-2">Welcome back!</h1>
-          <p className="text-muted-foreground">Here's an overview of your graduate application journey</p>
+          <h1 className="text-2xl md:text-4xl mb-2">Welcome back!</h1>
+          <p className="text-sm md:text-base text-muted-foreground">Here's an overview of your graduate application journey</p>
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           {stats.map((stat) => {
             const Icon = stat.icon;
             return (
-              <div key={stat.title} className="bg-card rounded-2xl p-6 border border-border shadow-sm">
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center`}>
-                    <Icon className="w-6 h-6" />
+              <div key={stat.title} className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border shadow-sm">
+                <div className="flex items-start justify-between mb-3 md:mb-4">
+                  <div className={`w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl ${stat.color} flex items-center justify-center`}>
+                    <Icon className="w-5 h-5 md:w-6 md:h-6" />
                   </div>
                 </div>
-                <div className="text-3xl font-bold mb-1">{stat.value}</div>
-                <div className="text-sm text-muted-foreground">{stat.title}</div>
+                <div className="text-2xl md:text-3xl font-bold mb-1">{stat.value}</div>
+                <div className="text-xs md:text-sm text-muted-foreground leading-tight">{stat.title}</div>
               </div>
             );
           })}
         </div>
 
         {/* Application Progress */}
-        <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
-          <div className="flex items-center justify-between mb-6">
+        <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border shadow-sm">
+          <div className="flex items-start md:items-center justify-between mb-4 md:mb-6 gap-3">
             <div>
-              <h2 className="text-2xl mb-1">Application Progress</h2>
-              <p className="text-sm text-muted-foreground">Track your applications by status</p>
+              <h2 className="text-xl md:text-2xl mb-1">Application Progress</h2>
+              <p className="text-xs md:text-sm text-muted-foreground">Track your applications by status</p>
             </div>
-            <Link 
-              to="/applications" 
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:opacity-90 transition-opacity"
+            <Link
+              to="/applications"
+              className="px-3 md:px-4 py-2 text-sm md:text-base bg-primary text-primary-foreground rounded-lg md:rounded-xl hover:opacity-90 transition-opacity flex-shrink-0"
             >
               View All
             </Link>
           </div>
-          
-          <div className="space-y-4">
+
+          <div className="space-y-3 md:space-y-4">
             {mockApplications.slice(0, 4).map((app) => (
-              <Link 
+              <Link
                 key={app.id}
                 to={`/applications/${app.id}`}
-                className="flex items-center justify-between p-4 bg-secondary/30 rounded-xl hover:bg-secondary/50 transition-colors"
+                className="flex flex-col md:flex-row md:items-center justify-between p-3 md:p-4 bg-secondary/30 rounded-lg md:rounded-xl hover:bg-secondary/50 transition-colors gap-3"
               >
-                <div className="flex-1">
-                  <div className="font-semibold mb-1">{app.university}</div>
-                  <div className="text-sm text-muted-foreground">{app.program}</div>
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm md:text-base mb-1 truncate">{app.university}</div>
+                  <div className="text-xs md:text-sm text-muted-foreground truncate">{app.program}</div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
+                <div className="flex items-center justify-between md:justify-end gap-3 md:gap-4">
+                  <div className="text-left md:text-right">
                     <div className="text-xs text-muted-foreground mb-1">Deadline</div>
-                    <div className="text-sm font-medium">
+                    <div className="text-xs md:text-sm font-medium">
                       {new Date(app.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
                   </div>
@@ -130,29 +130,29 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           {/* Upcoming Deadlines */}
-          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
-            <div className="flex items-center gap-2 mb-6">
-              <AlertCircle className="w-5 h-5 text-orange-600" />
-              <h2 className="text-xl">Upcoming Deadlines</h2>
+          <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border shadow-sm">
+            <div className="flex items-center gap-2 mb-4 md:mb-6">
+              <AlertCircle className="w-4 h-4 md:w-5 md:h-5 text-orange-600" />
+              <h2 className="text-lg md:text-xl">Upcoming Deadlines</h2>
             </div>
-            
+
             {upcomingDeadlines.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No upcoming deadlines in the next 30 days</p>
+              <p className="text-muted-foreground text-xs md:text-sm">No upcoming deadlines in the next 30 days</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                 {upcomingDeadlines.map((app) => {
                   const daysUntil = Math.ceil(
                     (new Date(app.deadline).getTime() - today.getTime()) / (1000 * 60 * 60 * 24)
                   );
                   return (
                     <div key={app.id} className="flex items-center justify-between p-3 bg-accent/30 rounded-lg">
-                      <div>
-                        <div className="font-medium text-sm">{app.university}</div>
-                        <div className="text-xs text-muted-foreground">{app.program}</div>
+                      <div className="flex-1 min-w-0 pr-3">
+                        <div className="font-medium text-xs md:text-sm truncate">{app.university}</div>
+                        <div className="text-xs text-muted-foreground truncate">{app.program}</div>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right flex-shrink-0">
                         <div className="text-xs font-medium text-orange-600">{daysUntil} days</div>
                         <div className="text-xs text-muted-foreground">
                           {new Date(app.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
@@ -166,25 +166,25 @@ export function Dashboard() {
           </div>
 
           {/* Pending Tasks */}
-          <div className="bg-card rounded-2xl p-6 border border-border shadow-sm">
-            <div className="flex items-center gap-2 mb-6">
-              <TrendingUp className="w-5 h-5 text-primary" />
-              <h2 className="text-xl">Pending Tasks</h2>
+          <div className="bg-card rounded-xl md:rounded-2xl p-4 md:p-6 border border-border shadow-sm">
+            <div className="flex items-center gap-2 mb-4 md:mb-6">
+              <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+              <h2 className="text-lg md:text-xl">Pending Tasks</h2>
             </div>
-            
+
             {pendingTasks.length === 0 ? (
-              <p className="text-muted-foreground text-sm">No pending tasks. Great job!</p>
+              <p className="text-muted-foreground text-xs md:text-sm">No pending tasks. Great job!</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 md:space-y-3">
                 {pendingTasks.map((task) => (
-                  <div key={task.id} className="flex items-start gap-3 p-3 bg-muted/50 rounded-lg">
-                    <div className="w-5 h-5 rounded border-2 border-primary mt-0.5 flex-shrink-0" />
-                    <div className="flex-1">
-                      <div className="font-medium text-sm">{task.title}</div>
-                      <div className="text-xs text-muted-foreground">{task.university}</div>
+                  <div key={task.id} className="flex items-start gap-2 md:gap-3 p-3 bg-muted/50 rounded-lg">
+                    <div className="w-4 h-4 md:w-5 md:h-5 rounded border-2 border-primary mt-0.5 flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-xs md:text-sm">{task.title}</div>
+                      <div className="text-xs text-muted-foreground truncate">{task.university}</div>
                     </div>
                     {task.dueDate && (
-                      <div className="text-xs text-muted-foreground">
+                      <div className="text-xs text-muted-foreground flex-shrink-0">
                         {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                       </div>
                     )}
@@ -192,10 +192,10 @@ export function Dashboard() {
                 ))}
               </div>
             )}
-            
-            <Link 
-              to="/tasks" 
-              className="block mt-4 text-sm text-primary hover:underline"
+
+            <Link
+              to="/tasks"
+              className="block mt-3 md:mt-4 text-xs md:text-sm text-primary hover:underline"
             >
               View all tasks →
             </Link>
@@ -203,19 +203,19 @@ export function Dashboard() {
         </div>
 
         {/* AI Assistant Banner */}
-        <div className="bg-gradient-to-r from-[#162660] to-[#2563eb] rounded-2xl p-8 text-white">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
-              <Sparkles className="w-6 h-6" />
+        <div className="bg-gradient-to-r from-[#162660] to-[#2563eb] rounded-xl md:rounded-2xl p-5 md:p-8 text-white">
+          <div className="flex flex-col md:flex-row items-start gap-3 md:gap-4">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-lg md:rounded-xl bg-white/20 flex items-center justify-center flex-shrink-0">
+              <Sparkles className="w-5 h-5 md:w-6 md:h-6" />
             </div>
             <div className="flex-1">
-              <h2 className="text-2xl mb-2">Need help with your applications?</h2>
-              <p className="text-white/90 mb-4">
+              <h2 className="text-xl md:text-2xl mb-2">Need help with your applications?</h2>
+              <p className="text-white/90 text-sm md:text-base mb-4">
                 Get AI-powered feedback on your personal statement or ask questions about the application process.
               </p>
-              <Link 
-                to="/ai-assistant" 
-                className="inline-block px-6 py-3 bg-white text-[#162660] rounded-xl font-medium hover:bg-white/90 transition-colors"
+              <Link
+                to="/ai-assistant"
+                className="inline-block px-5 md:px-6 py-2.5 md:py-3 text-sm md:text-base bg-white text-[#162660] rounded-lg md:rounded-xl font-medium hover:bg-white/90 transition-colors"
               >
                 Try AI Assistant
               </Link>
