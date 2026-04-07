@@ -15,8 +15,23 @@ import { mockApplications } from "../data/mockData";
 
 export function ApplicationDetail() {
   const { id } = useParams();
-  const application = mockApplications.find(app => app.id === id);
+  const [application, setApplication] = useState(() => mockApplications.find(app => app.id === id));
   const [activeTab, setActiveTab] = useState<"overview" | "documents" | "tasks" | "notes">("overview");
+  const [showEditModal, setShowEditModal] = useState(false);
+
+  const handleTaskToggle = (taskId: string) => {
+    if (!application) return;
+    setApplication({
+      ...application,
+      tasks: application.tasks.map(task =>
+        task.id === taskId ? { ...task, completed: !task.completed } : task
+      )
+    });
+  };
+
+  const handleEditClick = () => {
+    setShowEditModal(true);
+  };
 
   if (!application) {
     return (
@@ -74,7 +89,11 @@ export function ApplicationDetail() {
 
             <div className="flex items-center gap-3 w-full md:w-auto">
               <StatusBadge status={application.status} />
-              <button className="p-2 hover:bg-muted rounded-lg transition-colors ml-auto md:ml-0">
+              <button
+                onClick={handleEditClick}
+                className="p-2 hover:bg-muted rounded-lg transition-colors ml-auto md:ml-0"
+                aria-label="Edit application"
+              >
                 <Edit className="w-4 h-4 md:w-5 md:h-5" />
               </button>
             </div>
@@ -133,11 +152,15 @@ export function ApplicationDetail() {
 
           <div className="p-4 md:p-8">
             {activeTab === "overview" && <OverviewTab application={application} />}
-            {activeTab === "documents" && <DocumentsTab application={application} />}
-            {activeTab === "tasks" && <TasksTab application={application} />}
-            {activeTab === "notes" && <NotesTab application={application} />}
+            {activeTab === "documents" && <DocumentsTab application={application} onDocumentsChange={(docs) => setApplication({ ...application, documents: docs })} />}
+            {activeTab === "tasks" && <TasksTab application={application} onTaskToggle={handleTaskToggle} onTasksChange={(tasks) => setApplication({ ...application, tasks })} />}
+            {activeTab === "notes" && <NotesTab application={application} onNotesChange={(notes) => setApplication({ ...application, notes })} />}
           </div>
         </div>
+
+        {showEditModal && (
+          <EditModal application={application} onClose={() => setShowEditModal(false)} />
+        )}
       </div>
     </div>
   );
@@ -190,12 +213,24 @@ function OverviewTab({ application }: { application: typeof mockApplications[0] 
   );
 }
 
-function DocumentsTab({ application }: { application: typeof mockApplications[0] }) {
+function DocumentsTab({ application, onDocumentsChange }: { application: typeof mockApplications[0], onDocumentsChange: (docs: string[]) => void }) {
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  const handleDelete = (docIndex: number) => {
+    if (confirm('Are you sure you want to remove this document from this application?')) {
+      const newDocs = application.documents.filter((_, index) => index !== docIndex);
+      onDocumentsChange(newDocs);
+    }
+  };
+
   return (
     <div className="space-y-3 md:space-y-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 md:mb-4 gap-3">
         <h3 className="text-base md:text-lg">Required Documents</h3>
-        <button className="w-full sm:w-auto px-3 md:px-4 py-2 text-sm md:text-base bg-primary text-primary-foreground rounded-lg md:rounded-xl hover:opacity-90 transition-opacity">
+        <button
+          onClick={() => setShowUploadModal(true)}
+          className="w-full sm:w-auto px-3 md:px-4 py-2 text-sm md:text-base bg-primary text-primary-foreground rounded-lg md:rounded-xl hover:opacity-90 transition-opacity"
+        >
           Upload Document
         </button>
       </div>
@@ -213,23 +248,43 @@ function DocumentsTab({ application }: { application: typeof mockApplications[0]
                 <div className="font-medium text-xs md:text-sm truncate">{doc}</div>
                 <div className="text-xs text-muted-foreground">Uploaded from vault</div>
               </div>
-              <button className="p-1.5 md:p-2 hover:bg-background rounded-lg transition-colors flex-shrink-0">
+              <button
+                onClick={() => handleDelete(index)}
+                className="p-1.5 md:p-2 hover:bg-background rounded-lg transition-colors flex-shrink-0"
+                aria-label="Remove document"
+              >
                 <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-destructive" />
               </button>
             </div>
           ))}
         </div>
       )}
+
+      {showUploadModal && (
+        <UploadDocModal onClose={() => setShowUploadModal(false)} />
+      )}
     </div>
   );
 }
 
-function TasksTab({ application }: { application: typeof mockApplications[0] }) {
+function TasksTab({ application, onTaskToggle, onTasksChange }: { application: typeof mockApplications[0], onTaskToggle: (taskId: string) => void, onTasksChange: (tasks: typeof application.tasks) => void }) {
+  const [showAddTaskModal, setShowAddTaskModal] = useState(false);
+
+  const handleDeleteTask = (taskId: string) => {
+    if (confirm('Are you sure you want to delete this task?')) {
+      const newTasks = application.tasks.filter(t => t.id !== taskId);
+      onTasksChange(newTasks);
+    }
+  };
+
   return (
     <div className="space-y-3 md:space-y-4">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-3 md:mb-4 gap-3">
         <h3 className="text-base md:text-lg">Task Checklist</h3>
-        <button className="w-full sm:w-auto px-3 md:px-4 py-2 text-sm md:text-base border border-border rounded-lg md:rounded-xl hover:bg-muted transition-colors">
+        <button
+          onClick={() => setShowAddTaskModal(true)}
+          className="w-full sm:w-auto px-3 md:px-4 py-2 text-sm md:text-base border border-border rounded-lg md:rounded-xl hover:bg-muted transition-colors"
+        >
           Add Task
         </button>
       </div>
@@ -245,7 +300,11 @@ function TasksTab({ application }: { application: typeof mockApplications[0] }) 
                 task.completed ? "bg-muted/30" : "bg-accent/20"
               }`}
             >
-              <button className="mt-0.5 flex-shrink-0">
+              <button
+                onClick={() => onTaskToggle(task.id)}
+                className="mt-0.5 flex-shrink-0 cursor-pointer hover:opacity-70 transition-opacity"
+                aria-label={task.completed ? "Mark task as incomplete" : "Mark task as complete"}
+              >
                 {task.completed ? (
                   <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
                 ) : (
@@ -266,32 +325,204 @@ function TasksTab({ application }: { application: typeof mockApplications[0] }) 
                   </div>
                 )}
               </div>
-              <button className="p-1.5 md:p-2 hover:bg-background rounded-lg transition-colors flex-shrink-0">
+              <button
+                onClick={() => handleDeleteTask(task.id)}
+                className="p-1.5 md:p-2 hover:bg-background rounded-lg transition-colors flex-shrink-0"
+                aria-label="Delete task"
+              >
                 <Trash2 className="w-3.5 h-3.5 md:w-4 md:h-4 text-muted-foreground" />
               </button>
             </div>
           ))}
         </div>
       )}
+
+      {showAddTaskModal && (
+        <AddTaskModal onClose={() => setShowAddTaskModal(false)} />
+      )}
     </div>
   );
 }
 
-function NotesTab({ application }: { application: typeof mockApplications[0] }) {
+function NotesTab({ application, onNotesChange }: { application: typeof mockApplications[0], onNotesChange: (notes: string) => void }) {
+  const [notes, setNotes] = useState(application.notes || "");
+
+  const handleSave = () => {
+    onNotesChange(notes);
+    alert("Notes saved successfully!");
+  };
+
   return (
     <div className="space-y-3 md:space-y-4">
       <h3 className="text-base md:text-lg mb-3 md:mb-4">Application Notes</h3>
 
       <textarea
-        defaultValue={application.notes}
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
         rows={10}
         placeholder="Add notes about this application..."
         className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring resize-none"
       />
 
-      <button className="w-full md:w-auto px-4 md:px-6 py-2.5 md:py-3 text-sm md:text-base bg-primary text-primary-foreground rounded-lg md:rounded-xl hover:opacity-90 transition-opacity">
+      <button
+        onClick={handleSave}
+        className="w-full md:w-auto px-4 md:px-6 py-2.5 md:py-3 text-sm md:text-base bg-primary text-primary-foreground rounded-lg md:rounded-xl hover:opacity-90 transition-opacity"
+      >
         Save Notes
       </button>
+    </div>
+  );
+}
+
+function UploadDocModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div className="bg-card rounded-xl p-6 max-w-md w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <h3 className="text-lg font-semibold mb-4">Select Document from Vault</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Choose a document from your Document Vault to attach to this application.
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={() => {
+              alert('Document selection from vault would be implemented here');
+              onClose();
+            }}
+            className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+          >
+            Choose from Vault
+          </button>
+          <button onClick={onClose} className="px-4 py-2 border border-border rounded-lg hover:bg-muted">
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AddTaskModal({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div className="bg-card rounded-xl p-6 max-w-md w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <h3 className="text-lg font-semibold mb-4">Add Task</h3>
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm mb-2">Task Title</label>
+            <input
+              type="text"
+              placeholder="e.g., Submit recommendation letter request"
+              className="w-full px-3 py-2 bg-input-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div>
+            <label className="block text-sm mb-2">Due Date</label>
+            <input
+              type="date"
+              className="w-full px-3 py-2 bg-input-background border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div className="flex gap-3 pt-2">
+            <button
+              onClick={() => {
+                alert('Task creation would be implemented here');
+                onClose();
+              }}
+              className="flex-1 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:opacity-90"
+            >
+              Add Task
+            </button>
+            <button onClick={onClose} className="px-4 py-2 border border-border rounded-lg hover:bg-muted">
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function EditModal({ application, onClose }: { application: typeof mockApplications[0], onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div className="bg-card rounded-xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <h2 className="text-xl md:text-2xl mb-6">Edit Application</h2>
+
+        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); alert('Application updates would be saved here'); onClose(); }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm mb-2">University Name</label>
+              <input
+                type="text"
+                defaultValue={application.university}
+                className="w-full px-4 py-2.5 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-2">Program</label>
+              <input
+                type="text"
+                defaultValue={application.program}
+                className="w-full px-4 py-2.5 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-2">Country</label>
+              <input
+                type="text"
+                defaultValue={application.country}
+                className="w-full px-4 py-2.5 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-2">Application Deadline</label>
+              <input
+                type="date"
+                defaultValue={application.deadline.split('T')[0]}
+                className="w-full px-4 py-2.5 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label className="block text-sm mb-2">Status</label>
+              <select
+                defaultValue={application.status}
+                className="w-full px-4 py-2.5 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+              >
+                <option>Planning</option>
+                <option>In Progress</option>
+                <option>Submitted</option>
+                <option>Interview</option>
+                <option>Offer Received</option>
+                <option>Rejected</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm mb-2">Application Portal Link</label>
+              <input
+                type="url"
+                defaultValue={application.portalLink}
+                className="w-full px-4 py-2.5 bg-input-background border border-border rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="submit"
+              className="flex-1 px-6 py-2.5 bg-primary text-primary-foreground rounded-xl font-medium hover:opacity-90"
+            >
+              Save Changes
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-2.5 border border-border rounded-xl font-medium hover:bg-muted"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

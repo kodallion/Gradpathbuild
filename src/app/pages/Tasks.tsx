@@ -1,12 +1,38 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { CheckCircle2, Circle, Calendar, GraduationCap } from "lucide-react";
+import { CheckCircle2, Circle, Calendar, GraduationCap, CheckSquare } from "lucide-react";
 import { mockApplications } from "../data/mockData";
+import { EmptyState } from "../components/EmptyState";
+import { TaskListSkeleton } from "../components/LoadingState";
 
 export function Tasks() {
   const [filter, setFilter] = useState<"all" | "pending" | "completed">("all");
+  const [isLoading, setIsLoading] = useState(true);
+  const [applications, setApplications] = useState(mockApplications);
 
-  const allTasks = mockApplications.flatMap(app => 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const handleTaskToggle = (taskId: string) => {
+    setApplications(prevApps =>
+      prevApps.map(app => ({
+        ...app,
+        tasks: app.tasks.map(task =>
+          task.id === taskId ? { ...task, completed: !task.completed } : task
+        )
+      }))
+    );
+  };
+
+  if (isLoading) {
+    return <TaskListSkeleton />;
+  }
+
+  const allTasks = applications.flatMap(app =>
     app.tasks.map(task => ({
       ...task,
       university: app.university,
@@ -22,6 +48,32 @@ export function Tasks() {
 
   const pendingCount = allTasks.filter(t => !t.completed).length;
   const completedCount = allTasks.filter(t => t.completed).length;
+
+  // Empty state when no tasks
+  if (allTasks.length === 0) {
+    return (
+      <div className="p-4 md:p-8">
+        <div className="max-w-5xl mx-auto">
+          <div>
+            <h1 className="text-2xl md:text-4xl mb-2">Tasks</h1>
+            <p className="text-sm md:text-base text-muted-foreground mb-6">
+              Manage all your application tasks in one place
+            </p>
+          </div>
+
+          <div className="bg-card rounded-xl md:rounded-2xl border border-border shadow-sm">
+            <EmptyState
+              icon={CheckSquare}
+              title="No tasks yet"
+              description="Tasks will appear here once you add applications. Each application can have multiple tasks to help you stay organized."
+              actionLabel="Go to Applications"
+              actionTo="/applications"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8">
@@ -101,7 +153,11 @@ export function Tasks() {
                       : "bg-accent/20 hover:bg-accent/30"
                   }`}
                 >
-                  <button className="mt-0.5 flex-shrink-0">
+                  <button
+                    onClick={() => handleTaskToggle(task.id)}
+                    className="mt-0.5 flex-shrink-0 cursor-pointer"
+                    aria-label={task.completed ? "Mark task as incomplete" : "Mark task as complete"}
+                  >
                     {task.completed ? (
                       <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6 text-primary" />
                     ) : (

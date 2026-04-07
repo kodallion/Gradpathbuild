@@ -113,8 +113,23 @@ export function Settings() {
 }
 
 function ProfileSettings() {
-  const userEmail = localStorage.getItem("userEmail") || "user@example.com";
-  const userName = localStorage.getItem("userName") || "Student Name";
+  const [name, setName] = useState(localStorage.getItem("userName") || "Student Name");
+  const [email, setEmail] = useState(localStorage.getItem("userEmail") || "user@example.com");
+  const [phone, setPhone] = useState("");
+  const [bio, setBio] = useState("");
+
+  const handleSave = () => {
+    localStorage.setItem("userName", name);
+    localStorage.setItem("userEmail", email);
+    alert("Profile updated successfully!");
+  };
+
+  const handleCancel = () => {
+    setName(localStorage.getItem("userName") || "Student Name");
+    setEmail(localStorage.getItem("userEmail") || "user@example.com");
+    setPhone("");
+    setBio("");
+  };
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -130,7 +145,8 @@ function ProfileSettings() {
           <label className="block text-xs md:text-sm font-medium mb-2">Full Name</label>
           <input
             type="text"
-            defaultValue={userName}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             className="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
@@ -139,7 +155,8 @@ function ProfileSettings() {
           <label className="block text-xs md:text-sm font-medium mb-2">Email Address</label>
           <input
             type="email"
-            defaultValue={userEmail}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
         </div>
@@ -148,6 +165,8 @@ function ProfileSettings() {
           <label className="block text-xs md:text-sm font-medium mb-2">Phone Number</label>
           <input
             type="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
             placeholder="+1 (555) 123-4567"
             className="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
@@ -156,6 +175,8 @@ function ProfileSettings() {
         <div>
           <label className="block text-xs md:text-sm font-medium mb-2">Bio</label>
           <textarea
+            value={bio}
+            onChange={(e) => setBio(e.target.value)}
             rows={4}
             placeholder="Tell us about yourself..."
             className="w-full px-3 md:px-4 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary resize-none"
@@ -164,10 +185,16 @@ function ProfileSettings() {
       </div>
 
       <div className="flex flex-col sm:flex-row gap-2 md:gap-3 pt-3 md:pt-4">
-        <button className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+        <button
+          onClick={handleSave}
+          className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+        >
           Save Changes
         </button>
-        <button className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border font-medium hover:bg-accent transition-colors">
+        <button
+          onClick={handleCancel}
+          className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl border border-border font-medium hover:bg-accent transition-colors"
+        >
           Cancel
         </button>
       </div>
@@ -277,7 +304,10 @@ function NotificationSettings() {
       </div>
 
       <div className="flex gap-2 md:gap-3 pt-3 md:pt-4">
-        <button className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+        <button
+          onClick={() => alert("Notification preferences saved!")}
+          className="px-4 md:px-6 py-2 text-sm md:text-base rounded-lg md:rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+        >
           Save Preferences
         </button>
       </div>
@@ -286,6 +316,39 @@ function NotificationSettings() {
 }
 
 function SecuritySettings() {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const handleUpdatePassword = () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      alert("Please fill in all password fields");
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      alert("New passwords do not match");
+      return;
+    }
+    if (newPassword.length < 8) {
+      alert("Password must be at least 8 characters long");
+      return;
+    }
+    alert("Password updated successfully!");
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  const handleCancel = () => {
+    setCurrentPassword("");
+    setNewPassword("");
+    setConfirmPassword("");
+  };
+
+  const handleEnable2FA = () => {
+    alert("2FA setup would be implemented here. This would typically involve scanning a QR code and entering a verification code.");
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -300,6 +363,8 @@ function SecuritySettings() {
           <label className="block text-sm font-medium mb-2">Current Password</label>
           <input
             type="password"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
             placeholder="Enter current password"
             className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
@@ -309,6 +374,8 @@ function SecuritySettings() {
           <label className="block text-sm font-medium mb-2">New Password</label>
           <input
             type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
             placeholder="Enter new password"
             className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
@@ -318,6 +385,8 @@ function SecuritySettings() {
           <label className="block text-sm font-medium mb-2">Confirm New Password</label>
           <input
             type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Confirm new password"
             className="w-full px-4 py-2 rounded-xl border border-border bg-background focus:outline-none focus:ring-2 focus:ring-primary"
           />
@@ -325,10 +394,16 @@ function SecuritySettings() {
       </div>
 
       <div className="flex gap-3 pt-4">
-        <button className="px-6 py-2 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+        <button
+          onClick={handleUpdatePassword}
+          className="px-6 py-2 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors"
+        >
           Update Password
         </button>
-        <button className="px-6 py-2 rounded-xl border border-border font-medium hover:bg-accent transition-colors">
+        <button
+          onClick={handleCancel}
+          className="px-6 py-2 rounded-xl border border-border font-medium hover:bg-accent transition-colors"
+        >
           Cancel
         </button>
       </div>
@@ -338,7 +413,10 @@ function SecuritySettings() {
         <p className="text-sm text-muted-foreground mb-4">
           Add an extra layer of security to your account
         </p>
-        <button className="px-6 py-2 rounded-xl border border-border font-medium hover:bg-accent transition-colors">
+        <button
+          onClick={handleEnable2FA}
+          className="px-6 py-2 rounded-xl border border-border font-medium hover:bg-accent transition-colors"
+        >
           Enable 2FA
         </button>
       </div>
@@ -348,6 +426,10 @@ function SecuritySettings() {
 
 function AppearanceSettings() {
   const { theme, setTheme } = useTheme();
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+
+  const themeOptions = ["light", "dark", "auto"] as const;
+  const densityOptions = ["comfortable", "compact"] as const;
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -361,7 +443,7 @@ function AppearanceSettings() {
       <div>
         <label className="block text-xs md:text-sm font-medium mb-3 md:mb-4">Theme</label>
         <div className="grid grid-cols-3 gap-3 md:gap-4">
-          {(["light", "dark", "auto"] as const).map((themeOption) => (
+          {themeOptions.map((themeOption) => (
             <button
               key={themeOption}
               onClick={() => setTheme(themeOption)}
@@ -385,22 +467,24 @@ function AppearanceSettings() {
       <div>
         <label className="block text-xs md:text-sm font-medium mb-3 md:mb-4">Display Density</label>
         <div className="space-y-2">
-          {["comfortable", "compact"].map((density) => (
+          {densityOptions.map((densityOption) => (
             <label
-              key={density}
+              key={densityOption}
               className="flex items-center gap-3 p-2.5 md:p-3 rounded-lg md:rounded-xl border border-border hover:bg-accent cursor-pointer"
             >
               <input
                 type="radio"
                 name="density"
-                value={density}
+                value={densityOption}
+                checked={density === densityOption}
+                onChange={(e) => setDensity(e.target.value as "comfortable" | "compact")}
                 className="w-3.5 h-3.5 md:w-4 md:h-4"
               />
               <div>
-                <div className="font-medium capitalize text-sm md:text-base">{density}</div>
+                <div className="font-medium capitalize text-sm md:text-base">{densityOption}</div>
                 <div className="text-xs text-muted-foreground">
-                  {density === "comfortable" && "More spacing between elements"}
-                  {density === "compact" && "Less spacing, more content visible"}
+                  {densityOption === "comfortable" && "More spacing between elements"}
+                  {densityOption === "compact" && "Less spacing, more content visible"}
                 </div>
               </div>
             </label>

@@ -1,21 +1,37 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router";
-import { Plus, Search, Filter, ExternalLink, Calendar, MapPin } from "lucide-react";
+import { Plus, Search, Filter, ExternalLink, Calendar, MapPin, GraduationCap } from "lucide-react";
 import { mockApplications, type ApplicationStatus } from "../data/mockData";
+import { EmptyState } from "../components/EmptyState";
+import { ApplicationListSkeleton } from "../components/LoadingState";
 
 export function Applications() {
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "All">("All");
   const [showAddModal, setShowAddModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [applications, setApplications] = useState(mockApplications);
 
-  const filteredApplications = mockApplications.filter(app => {
-    const matchesSearch = 
+  useEffect(() => {
+    // Simulate loading
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading) {
+    return <ApplicationListSkeleton />;
+  }
+
+  const filteredApplications = applications.filter(app => {
+    const matchesSearch =
       app.university.toLowerCase().includes(searchQuery.toLowerCase()) ||
       app.program.toLowerCase().includes(searchQuery.toLowerCase()) ||
       app.country.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     const matchesStatus = statusFilter === "All" || app.status === statusFilter;
-    
+
     return matchesSearch && matchesStatus;
   });
 
@@ -28,6 +44,43 @@ export function Applications() {
     "Offer Received",
     "Rejected",
   ];
+
+  // Empty state when no applications exist
+  if (applications.length === 0) {
+    return (
+      <div className="p-4 md:p-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-start justify-between gap-3 mb-6">
+            <div>
+              <h1 className="text-2xl md:text-4xl mb-2">Applications</h1>
+              <p className="text-sm md:text-base text-muted-foreground">
+                Manage all your graduate school applications
+              </p>
+            </div>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="w-full md:w-auto px-4 md:px-6 py-2.5 md:py-3 text-sm md:text-base bg-primary text-primary-foreground rounded-lg md:rounded-xl font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              <Plus className="w-4 h-4 md:w-5 md:h-5" />
+              Add Application
+            </button>
+          </div>
+
+          <div className="bg-card rounded-xl md:rounded-2xl border border-border shadow-sm">
+            <EmptyState
+              icon={GraduationCap}
+              title="No applications yet"
+              description="Start tracking your graduate school applications. Add your first application to manage deadlines, tasks, and documents all in one place."
+              actionLabel="Add Your First Application"
+              onAction={() => setShowAddModal(true)}
+            />
+          </div>
+
+          {showAddModal && <AddApplicationModal onClose={() => setShowAddModal(false)} />}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8">
@@ -191,51 +244,87 @@ function StatusBadge({ status }: { status: string }) {
 }
 
 function AddApplicationModal({ onClose }: { onClose: () => void }) {
+  const [university, setUniversity] = useState("");
+  const [program, setProgram] = useState("");
+  const [country, setCountry] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [status, setStatus] = useState("Planning");
+  const [portalLink, setPortalLink] = useState("");
+  const [notes, setNotes] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!university || !program || !country || !deadline) {
+      alert("Please fill in all required fields");
+      return;
+    }
+
+    alert(`Application to ${university} would be added here!`);
+    onClose();
+  };
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-card rounded-xl md:rounded-2xl p-5 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
+      <div className="bg-card rounded-xl md:rounded-2xl p-5 md:p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
         <h2 className="text-xl md:text-2xl mb-4 md:mb-6">Add New Application</h2>
 
-        <form className="space-y-4 md:space-y-6">
+        <form className="space-y-4 md:space-y-6" onSubmit={handleSubmit}>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <div>
-              <label className="block text-xs md:text-sm mb-2">University Name</label>
+              <label className="block text-xs md:text-sm mb-2">University Name *</label>
               <input
                 type="text"
+                value={university}
+                onChange={(e) => setUniversity(e.target.value)}
                 placeholder="e.g., Stanford University"
                 className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+                required
               />
             </div>
 
             <div>
-              <label className="block text-xs md:text-sm mb-2">Program</label>
+              <label className="block text-xs md:text-sm mb-2">Program *</label>
               <input
                 type="text"
+                value={program}
+                onChange={(e) => setProgram(e.target.value)}
                 placeholder="e.g., MS in Computer Science"
                 className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+                required
               />
             </div>
 
             <div>
-              <label className="block text-xs md:text-sm mb-2">Country</label>
+              <label className="block text-xs md:text-sm mb-2">Country *</label>
               <input
                 type="text"
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
                 placeholder="e.g., United States"
                 className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+                required
               />
             </div>
 
             <div>
-              <label className="block text-xs md:text-sm mb-2">Application Deadline</label>
+              <label className="block text-xs md:text-sm mb-2">Application Deadline *</label>
               <input
                 type="date"
+                value={deadline}
+                onChange={(e) => setDeadline(e.target.value)}
                 className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+                required
               />
             </div>
 
             <div>
               <label className="block text-xs md:text-sm mb-2">Status</label>
-              <select className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring">
+              <select
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
+              >
                 <option>Planning</option>
                 <option>In Progress</option>
                 <option>Submitted</option>
@@ -249,6 +338,8 @@ function AddApplicationModal({ onClose }: { onClose: () => void }) {
               <label className="block text-xs md:text-sm mb-2">Application Portal Link</label>
               <input
                 type="url"
+                value={portalLink}
+                onChange={(e) => setPortalLink(e.target.value)}
                 placeholder="https://..."
                 className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring"
               />
@@ -258,6 +349,8 @@ function AddApplicationModal({ onClose }: { onClose: () => void }) {
           <div>
             <label className="block text-xs md:text-sm mb-2">Notes</label>
             <textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
               rows={4}
               placeholder="Add any notes about this application..."
               className="w-full px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base bg-input-background border border-border rounded-lg md:rounded-xl focus:outline-none focus:ring-2 focus:ring-ring resize-none"
