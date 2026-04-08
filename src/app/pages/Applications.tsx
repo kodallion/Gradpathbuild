@@ -1,3 +1,4 @@
+import { supabase } from "../../lib/supabase";
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { Plus, Search, Filter, ExternalLink, Calendar, MapPin, GraduationCap } from "lucide-react";
@@ -13,16 +14,22 @@ export function Applications() {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
-    // Simulate loading
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 600);
-    return () => clearTimeout(timer);
-  }, []);
+  const fetchApplications = async () => {
+    const { data, error } = await supabase
+      .from("applications")
+      .select("*");
 
-  if (isLoading) {
-    return <ApplicationListSkeleton />;
-  }
+    if (error) {
+      console.error(error);
+    } else {
+      setApplications(data);
+    }
+
+    setIsLoading(false);
+  };
+
+  fetchApplications();
+}, []);
 
   const filteredApplications = applications.filter(app => {
     const matchesSearch =
@@ -252,17 +259,38 @@ function AddApplicationModal({ onClose }: { onClose: () => void }) {
   const [portalLink, setPortalLink] = useState("");
   const [notes, setNotes] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-    if (!university || !program || !country || !deadline) {
-      alert("Please fill in all required fields");
-      return;
-    }
+  if (!university || !program || !country || !deadline) {
+    alert("Please fill in all required fields");
+    return;
+  }
 
-    alert(`Application to ${university} would be added here!`);
-    onClose();
-  };
+  const { error } = await supabase
+    .from("applications")
+    .insert([
+      {
+        university,
+        program,
+        country,
+        deadline,
+        status,
+        portalLink,
+        notes,
+      },
+    ]);
+
+  if (error) {
+    console.error(error);
+    alert("Error saving application");
+  } else {
+    alert("Application saved!");
+    window.location.reload(); // refresh to show new data
+  }
+
+  onClose();
+};
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50" onClick={onClose}>
