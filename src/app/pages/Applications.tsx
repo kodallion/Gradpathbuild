@@ -10,7 +10,7 @@ export function Applications() {
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "All">("All");
   const [showAddModal, setShowAddModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [applications, setApplications] = useState(mockApplications);
+  const [applications, setApplications] = useState([]);
 
   useEffect(() => {
     // Simulate loading
