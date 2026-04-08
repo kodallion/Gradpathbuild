@@ -250,24 +250,27 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
-function AddApplicationModal({ onClose }: { onClose: () => void }) {
-  const [university, setUniversity] = useState("");
-  const [program, setProgram] = useState("");
-  const [country, setCountry] = useState("");
-  const [deadline, setDeadline] = useState("");
-  const [status, setStatus] = useState("Planning");
-  const [portalLink, setPortalLink] = useState("");
-  const [notes, setNotes] = useState("");
-
-  const handleSubmit = async (e: React.FormEvent) => {
+const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+
+  console.log("🚀 SUBMIT CLICKED");
 
   if (!university || !program || !country || !deadline) {
     alert("Please fill in all required fields");
     return;
   }
 
-  const { error } = await supabase
+  console.log("📦 Sending data:", {
+    university,
+    program,
+    country,
+    deadline,
+    status,
+    portalLink,
+    notes,
+  });
+
+  const { data, error } = await supabase
     .from("applications")
     .insert([
       {
@@ -279,14 +282,17 @@ function AddApplicationModal({ onClose }: { onClose: () => void }) {
         portalLink,
         notes,
       },
-    ]);
+    ])
+    .select();
+
+  console.log("✅ RESPONSE DATA:", data);
+  console.log("❌ ERROR:", error);
 
   if (error) {
-    console.error(error);
     alert("Error saving application");
   } else {
     alert("Application saved!");
-    window.location.reload(); // refresh to show new data
+    window.location.reload();
   }
 
   onClose();
