@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { GraduationCap, AlertCircle } from "lucide-react";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { supabase } from "@/lib/supabase";
 
 export function CreateAccount() {
   const navigate = useNavigate();
@@ -13,7 +14,7 @@ export function CreateAccount() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -37,17 +38,29 @@ export function CreateAccount() {
       return;
     }
 
-    // Simulate account creation
-    setTimeout(() => {
-      // Store user data
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", email);
-      localStorage.setItem("userName", fullName);
+    try {
+      const { error: signUpError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: fullName,
+          },
+        },
+      });
 
-      // Navigate to onboarding
-      navigate("/onboarding/goals");
+      if (signUpError) {
+        setError(signUpError.message);
+        setIsLoading(false);
+        return;
+      }
+
+      // Navigate to dashboard on success
+      navigate("/dashboard");
+    } catch (err) {
+      setError("An unexpected error occurred");
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   return (

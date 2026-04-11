@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { GraduationCap, AlertCircle } from "lucide-react";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import { supabase } from "@/lib/supabase";
 
 export function SignIn() {
   const navigate = useNavigate();
@@ -11,7 +12,7 @@ export function SignIn() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
     setIsLoading(true);
@@ -23,22 +24,24 @@ export function SignIn() {
       return;
     }
 
-    // Simulate login process
-    setTimeout(() => {
-      // Simulate authentication
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", email);
+    try {
+      const { error: signInError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-      // Check if user has completed onboarding
-      const hasCompletedOnboarding = localStorage.getItem("gradpath_onboarding_complete");
-
-      if (hasCompletedOnboarding === "true") {
-        navigate("/dashboard");
-      } else {
-        navigate("/onboarding/goals");
+      if (signInError) {
+        setError(signInError.message);
+        setIsLoading(false);
+        return;
       }
+
+      // Navigate to dashboard on success
+      navigate("/dashboard");
+    } catch (err) {
+      setError("An unexpected error occurred");
       setIsLoading(false);
-    }, 800);
+    }
   };
 
   return (
