@@ -1,6 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
+import { projectId, publicAnonKey } from "../../utils/supabase/info";
 
-const supabaseUrl = "hlhjfwyzmsefkbaycrhy";
-const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsaGpmd3l6bXNlZmtiYXljcmh5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyNTk5NTgsImV4cCI6MjA4ODgzNTk1OH0.VivZMZp6xTb_PyxDW7EJyvMYiNxKikDqc2726D2PYzI";
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(
+  `https://${projectId}.supabase.co`,
+  publicAnonKey
+);
+export type ApplicationStatus = "not_started" | "in_progress" | "submitted" | "accepted" | "rejected" | "waitlisted";
+export interface Application {
+  id: string; user_id: string; school_name: string;
+  program: string; country: string; deadline: string;
+  status: ApplicationStatus; created_at: string;
+}
+export type NewApplication = Omit<Application, "id" | "user_id" | "created_at">;

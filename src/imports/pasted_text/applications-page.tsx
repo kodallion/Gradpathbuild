@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Plus, Search, Loader2, AlertCircle } from "lucide-react";
-import { Button } from "@/app/components/ui/button";
-import { Input } from "@/app/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/app/components/ui/dialog";
-import { Label } from "@/app/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/app/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useApplications } from "@/hooks/useApplications";
 import type { NewApplication, ApplicationStatus } from "@/lib/supabase";
 
@@ -20,7 +20,7 @@ const STATUS_OPTIONS = [
 
 const EMPTY: NewApplication = { school_name: "", program: "", country: "", deadline: "", status: "not_started" };
 
-export function Applications() {
+export default function ApplicationsPage() {
   const { applications, loading, error, addApplication } = useApplications();
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<NewApplication>(EMPTY);
